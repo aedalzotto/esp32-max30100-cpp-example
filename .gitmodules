@@ -1,0 +1,6 @@
+[submodule "components/esp32-i2c_device-cpp"]
+	path = components/esp32-i2c_device-cpp
+	url = https://github.com/aedalzotto/esp32-i2c_device-cpp
+[submodule "components/esp32-max30100-cpp"]
+	path = components/esp32-max30100-cpp
+	url = git@github.com:aedalzotto/esp32-max30100-cpp.git
