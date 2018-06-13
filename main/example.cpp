@@ -50,8 +50,10 @@ void get_bpm(void *max30100)
     while(true){
         try {
             ((Max30100::Device*)max30100)->update();
-            ESP_LOGI( ( (Max30100::Device*)max30100 )->get_tag(), "BPM: %lf ", ((Max30100::Device*)max30100)->get_bpm());
-            ESP_LOGI( ( (Max30100::Device*)max30100 )->get_tag(), "SPO2: %lf\n", ((Max30100::Device*)max30100)->get_spo2());
+            if(((Max30100::Device*)max30100)->is_pulse_detected()){
+                ESP_LOGD( ( (Max30100::Device*)max30100 )->get_tag(), "BPM: %lf ", ((Max30100::Device*)max30100)->get_bpm());
+                ESP_LOGD( ( (Max30100::Device*)max30100 )->get_tag(), "SPO2: %lf\n", ((Max30100::Device*)max30100)->get_spo2());
+            }
         } catch(I2CExcept::CommandFailed &ex){
             ESP_LOGE(( (Max30100::Device*)max30100 )->get_tag(), "%s", ex.what());
             continue;
@@ -64,11 +66,14 @@ extern "C" void app_main()
 {
     ESP_ERROR_CHECK(i2c_master_init(I2C_PORT));
     static Max30100::Device max30100(I2C_PORT);
-    
+
+
     try {
         max30100.init();
+        ESP_LOGD(max30100.get_tag(), "Device initialized.");
         xTaskCreate(get_bpm, "Get BPM", 8192, &max30100, 1, NULL);
     } catch(std::exception &ex){
         ESP_LOGE(max30100.get_tag(), "%s", ex.what());
     }
+
 }
